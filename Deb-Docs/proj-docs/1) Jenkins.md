@@ -103,3 +103,67 @@ pipeline {
 ## Put in the repo details and login with preferred method
 
 
+# Bash script version
+
+``` bash
+#!/bin/bash
+
+# Exit immediately if a command exits with a error
+set -e
+
+echo "Starting Jenkins and Docker Setup..."
+
+# 0) Update package manager
+echo "Updating package manager..."
+sudo apt update && sudo apt upgrade -y
+
+# 3) Set up basic tools
+echo "Installing basic tools (curl, wget, git, unzip, snapd)..."
+sudo apt install curl wget git unzip snapd -y
+
+# Step 1: Install Java
+echo "Installing Java 17 (JRE)..."
+sudo apt install fontconfig openjdk-17-jre -y
+
+# Install Docker
+echo "Installing Docker..."
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+rm get-docker.sh
+
+# Give user permissions to docker
+echo "Adding current user ($USER) to the docker group..."
+sudo usermod -aG docker $USER
+
+# Make a docker compose file for Jenkins
+echo "Creating docker-compose.yml for Jenkins..."
+cat <<EOF > docker-compose.yml
+version: '3.8'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  jenkins_data:
+EOF
+```
+``` bash
+sudo chmod 666 /var/run/docker.sock
+
+sg docker -c "docker compose up -d"
+sleep 15
+
+sg docker -c "docker exec -u root jenkins bash -c 'apt-get update && apt-get install -y docker.io'"
+echo "Your initial Admin Password is:"
+sg docker -c "docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword"
+```
