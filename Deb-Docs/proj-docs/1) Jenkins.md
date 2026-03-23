@@ -1,6 +1,5 @@
 **Step 1: Install Java**
-
-Jenkins is a Java application, so it needs the Java Runtime Environment (JRE) installed first. The current recommended version is Java 17.
+java installation for jenkins
 ``` bash
 sudo apt update
 
@@ -155,8 +154,3 @@ sg docker -c "docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPass
 
 
 ```
-
-
-
-
-## im going to use ansible for this set up now
