@@ -1,0 +1,13 @@
+---
+- name: Simple Docker Connection Test
+  hosts: webcontainers
+  gather_facts: false
+
+  tasks:
+    - name: Get the hostname bypassing Python entirely
+      raw: hostname
+      register: command_output
+
+    - name: Print the result to the screen
+      debug:
+        msg: "hostname is: {{ command_output.stdout }}"
