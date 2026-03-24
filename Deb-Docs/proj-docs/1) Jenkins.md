@@ -106,8 +106,6 @@ pipeline {
 
 ``` bash
 #!/bin/bash
-
-# Exit immediately if a command exits with a non-zero status
 set -e
 # 0) Update package manager
 sudo apt update && sudo apt upgrade -y
